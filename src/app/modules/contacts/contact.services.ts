@@ -5,19 +5,23 @@ import { TContact } from './contact.interface'
 import { Contact } from './contact.model'
 
 const addContact = async (
-  payload: Partial<TContact>,
+  payload: TContact & { photoUrl: string },
   photoDirectory: string,
 ) => {
-  const photoLink = (await fileUpload.upload_to_cloudinary(
-    photoDirectory,
-  )) as string
+  const { photoUrl, ...contactData } = payload
+  if (photoDirectory) {
+    const photoLink = (await fileUpload.upload_to_cloudinary(
+      photoDirectory,
+    )) as string
 
-  if (!photoLink) {
+    contactData.ProfilePhoto = photoLink
+  } else if (photoUrl) {
+    contactData.ProfilePhoto = photoUrl
+  } else {
     throw new AppError(httpStatus.BAD_REQUEST, 'Profile photo required')
   }
-  payload.ProfilePhoto = photoLink
 
-  const result = await Contact.create(payload)
+  const result = await Contact.create(contactData)
 
   return result
 }
@@ -40,7 +44,7 @@ const getContacts = async (searchTerm: string) => {
 
 const updateContact = async (
   id: string,
-  payload: Partial<TContact>,
+  payload: Partial<TContact> & { photoUrl: string },
   photoDirectory: string,
 ) => {
   const contact = await Contact.findById({ _id: id })
@@ -49,18 +53,18 @@ const updateContact = async (
     throw new AppError(httpStatus.NOT_FOUND, 'Contact not found')
   }
 
+  const { photoUrl, ...contactData } = payload
   if (photoDirectory) {
     const photoLink = (await fileUpload.upload_to_cloudinary(
       photoDirectory,
     )) as string
 
-    if (!photoLink) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Profile photo  update failed')
-    }
-    payload.ProfilePhoto = photoLink
+    contactData.ProfilePhoto = photoLink
+  } else if (photoUrl) {
+    contactData.ProfilePhoto = photoUrl
   }
 
-  const result = await Contact.findByIdAndUpdate({ _id: id }, payload, {
+  const result = await Contact.findByIdAndUpdate({ _id: id }, contactData, {
     new: true,
   })
 
