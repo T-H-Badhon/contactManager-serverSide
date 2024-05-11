@@ -43,6 +43,7 @@ const updateContact = async (
   payload: Partial<TContact>,
   photoDirectory: string,
 ) => {
+  console.log(id, payload)
   const contact = await Contact.findById({ _id: id })
 
   if (!contact) {
