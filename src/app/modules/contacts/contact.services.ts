@@ -77,9 +77,28 @@ const deleteContact = async (id: string) => {
   }
 }
 
+const changeFavouriteStatus = async (id: string) => {
+  const contact = await Contact.findById({ _id: id })
+
+  if (!contact) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Contact not found')
+  }
+
+  const result = await Contact.findByIdAndUpdate(
+    { _id: id },
+    { isFavourite: !contact.isFavourite },
+    {
+      new: true,
+    },
+  )
+
+  return result
+}
+
 export const contactServices = {
   addContact,
   getContacts,
   updateContact,
   deleteContact,
+  changeFavouriteStatus,
 }

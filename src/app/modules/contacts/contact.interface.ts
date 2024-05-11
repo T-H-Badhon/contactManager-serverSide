@@ -4,4 +4,5 @@ export type TContact = {
   phoneNumber: string
   address: string
   ProfilePhoto: string
+  isFavourite: boolean
 }

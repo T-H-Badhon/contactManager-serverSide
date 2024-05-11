@@ -25,6 +25,11 @@ router.patch(
   contactControllers.updateContact,
 )
 
+router.patch(
+  '/change-favourite-status/:id',
+  contactControllers.changeFavouriteStatus,
+)
+
 router.delete('/delete/:id', contactControllers.deleteContact)
 
 export const contactRoutes = router

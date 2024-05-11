@@ -61,9 +61,25 @@ const deleteContact = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const changeFavouriteStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const id = req.params.id
+
+    const result = await contactServices.changeFavouriteStatus(id)
+
+    response(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Contact marks as favourite',
+      data: result,
+    })
+  },
+)
+
 export const contactControllers = {
   addContact,
   getContacts,
   updateContact,
   deleteContact,
+  changeFavouriteStatus,
 }
